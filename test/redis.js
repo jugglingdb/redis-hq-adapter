@@ -8,3 +8,9 @@ schema.name = 'redis-hq';
 
 test(module.exports, schema);
 
+if (test.skip) {
+
+    test.skip('hasMany should be cached');
+
+}
+
