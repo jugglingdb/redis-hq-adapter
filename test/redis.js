@@ -19,7 +19,7 @@ var Content = schema.define('Content', {
     title: String,
     createdAt: { type: Date, defaultSort: 'desc' },
     score: { type: Number, index: true },
-    groupModel: { type: Array, index: true }
+    groupModel: { type: String, index: true }
 });
 
 //define the tags test schema - should this be a standard type that belongs inside redis-hq.js ?
@@ -35,9 +35,9 @@ var Tag = schema.define('Tag', {
 // schema.extendModel('Content', { tags: schema.Tag});
 
 //the groupModel field allows us to query by group+model with one redis command
-Tag.getter.groupModel = function() {
-    return this.groupId + '.' + this.model;
-};
+// Tag.getter.groupModel = function() {
+//     return this.groupId + '.' + this.model;
+// };
 
 test(module.exports, schema);
 
@@ -71,13 +71,15 @@ if (test.skip) {
 
 test.it('should handle ORDER clause', function (test) {
     Content.hasMany(schema.models.User, {as: 'author', foreignKey: 'authorId'});
-    Content.create({text: '1'}, function () {
-        Content.create({text: '2'}, function () {
-            Content.all(function (err, contents) {
-                test.equal(contents.length, 2);
-                test.equal(contents[0].text, '2');
-                test.equal(contents[1].text, '1');
-                Content.destroyAll(test.done);
+    Content.destroyAll(function () {
+        Content.create({text: '1'}, function () {
+            Content.create({text: '2'}, function () {
+                Content.all(function (err, contents) {
+                    test.equal(contents.length, 2);
+                    test.equal(contents[0].text, '2');
+                    test.equal(contents[1].text, '1');
+                    Content.destroyAll(test.done);
+                });
             });
         });
     });
