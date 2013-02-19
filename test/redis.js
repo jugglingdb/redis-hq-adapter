@@ -19,8 +19,8 @@ var Content = schema.define('Content', {
     title: String,
     createdAt: { type: Date, defaultSort: 'desc' },
     score: { type: Number, index: true },
-    groupModel: { type: String, index: true },
-    tags: { type: String, index: true }
+    groupModel: { type: [], index: true },
+    tags: { type: [], index: true }
 }, {
     customSort: {
         'tags.popular': 'score'
