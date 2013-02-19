@@ -7,7 +7,8 @@
     "test": "nodeunit test/redis.js"
   },
   "dependencies": {
-    "redis": "= 0.7.2"
+    "redis": "= 0.7.2",
+    "reds": "latest"
   },
   "devDependencies": {
     "jugglingdb": "= 0.2.x",
