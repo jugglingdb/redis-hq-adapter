@@ -1,10 +1,7 @@
-var jdb = require('jugglingdb'),
-    Schema = jdb.Schema,
-    test = jdb.test,
-    schema = new Schema(__dirname + '/..', {
-    });
+require('jugglingdb/test/common.batch.js');
+// require('jugglingdb/test/include.test.js');
 
-schema.name = 'redis-hq';
+return;
 
 //these paging params should be used in all below tests
 var pageSize = 5;
@@ -34,9 +31,6 @@ var Content = schema.define('Content', {
 
 test(module.exports, schema);
 
-if (test.skip) {
-    test.skip('hasMany should be cached');
-}
 
 test.it('should handle ORDER clause', function (test) {
     Content.hasMany(schema.models.User, {as: 'author', foreignKey: 'authorId'});
