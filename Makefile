@@ -11,4 +11,18 @@ test-verbose:
 testing:
 	$(TESTER) $(OPTS) --watch $(TESTS)
 
+## WORKFLOW
+
+GITBRANCH = $(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+
+REPO = marcusgreenwood/jugglingdb-redis-hq
+FROM = $(GITBRANCH)
+TO = $(GITBRANCH)
+
+pr: push
+	open "https://github.com/$(REPO)/pull/new/marcusgreenwood:master...$(GITBRANCH)"
+
+push: test
+	git push origin $(TO)
+
 .PHONY: test docs
