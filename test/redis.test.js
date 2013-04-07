@@ -1,6 +1,6 @@
 var Content, db, should = require('should');
 
-describe.only('redis', function() {
+describe('redis', function() {
 
     before(function() {
         db = getSchema();
