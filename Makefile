@@ -1,7 +1,7 @@
 ## TESTS
 
 TESTER = ./node_modules/.bin/mocha
-OPTS = --require ./test/init.js --ignore-leaks --growl
+OPTS = --ignore-leaks --growl
 TESTS = test/*.test.js
 
 test:

@@ -1,6 +1,7 @@
-var Content, db, should = require('should');
+var should = require('./init.js');
+var Content, db;
 
-describe('redis', function() {
+describe('redis-hq', function() {
 
     before(function() {
         db = getSchema();
