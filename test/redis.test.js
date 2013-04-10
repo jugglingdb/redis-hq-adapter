@@ -28,36 +28,32 @@ describe('redis-hq', function() {
         });
 
         it('should handle ORDER clause', function (done) {
-            Content.create({text: '1'}, function () {
-                Content.create({text: '2'}, function () {
-                    Content.all(function (err, contents) {
-                        should.not.exist(err);
-                        contents.should.have.lengthOf(2);
-                        contents[0].text.should.equal('2');
-                        contents[1].text.should.equal('1');
-                        done();
-                    });
+            Content.create([{text: '1'}, {text: '2'}], function () {
+                Content.all(function (err, contents) {
+                    should.not.exist(err);
+                    contents.should.have.lengthOf(2);
+                    contents[0].text.should.equal('2');
+                    contents[1].text.should.equal('1');
+                    done();
                 });
             });
         });
 
         it('should handle order clause with direction', function (done) {
-            Content.create({text: '1'}, function () {
-                Content.create({text: '2'}, function () {
-                    Content.all({reverse: false}, function (err, contents) {
+            Content.create([{text: '1'},{text: '2'}], function () {
+                Content.all({reverse: false}, function (err, contents) {
+                    should.not.exist(err);
+                    should.exist(contents);
+                    contents.should.have.lengthOf(2);
+                    contents[0].text.should.equal('1');
+                    contents[1].text.should.equal('2');
+                    Content.all({reverse: true}, function (err, contents) {
                         should.not.exist(err);
                         should.exist(contents);
                         contents.should.have.lengthOf(2);
-                        contents[0].text.should.equal('1');
-                        contents[1].text.should.equal('2');
-                        Content.all({reverse: true}, function (err, contents) {
-                            should.not.exist(err);
-                            should.exist(contents);
-                            contents.should.have.lengthOf(2);
-                            contents[0].text.should.equal('2');
-                            contents[1].text.should.equal('1');
-                            done();
-                        });
+                        contents[0].text.should.equal('2');
+                        contents[1].text.should.equal('1');
+                        done();
                     });
                 });
             });
@@ -114,16 +110,17 @@ describe('redis-hq', function() {
 
         //standard tag query with default sort order
         it('should get all content tagged with "news" sorted by "id desc"', function(done) {
-            Content.create({ url: 'url1', tags: [ 'news' ] }, function () {
-                Content.create({ url: 'url2', tags: [ 'news' ] }, function () {
-                    Content.all({where: {tags: 'news'}}, function (e, c) {
-                        should.not.exist(e);
-                        should.exist(c);
-                        c.should.have.lengthOf(2);
-                        c[0].url.should.equal('url2');
-                        c[1].url.should.equal('url1');
-                        done();
-                    });
+            Content.create([
+                { url: 'url1', tags: [ 'news' ] },
+                { url: 'url2', tags: [ 'news' ] }
+            ], function () {
+                Content.all({where: {tags: 'news'}}, function (e, c) {
+                    should.not.exist(e);
+                    should.exist(c);
+                    c.should.have.lengthOf(2);
+                    c[0].url.should.equal('url2');
+                    c[1].url.should.equal('url1');
+                    done();
                 });
             });
 
@@ -133,27 +130,21 @@ describe('redis-hq', function() {
     describe('customSort', function() {
 
         before(function(done) {
-            Content.create({
+            Content.create([{
                 groupId: 1,
                 url: 'one',
                 score: 7,
                 tags: [ 'popular' ]
-            }, function (e) {
-                should.not.exist(e);
-                Content.create({
-                    groupId: 1,
-                    url: 'three',
-                    score: 9,
-                    tags: [ 'popular' ]
-                }, function (e) {
-                    should.not.exist(e);
-                    Content.create({
-                        url: 'two',
-                        score: 8,
-                        tags: [ 'popular' ]
-                    }, done);
-                });
-            });
+            }, {
+                groupId: 1,
+                url: 'three',
+                score: 9,
+                tags: [ 'popular' ]
+            }, {
+                url: 'two',
+                score: 8,
+                tags: [ 'popular' ]
+            }], done);
         });
 
         //standard tag query with tag-specified sort order

@@ -1,1 +1,1 @@
-module.exports = require('./lib/redis-hq');
+module.exports = require('./lib');
