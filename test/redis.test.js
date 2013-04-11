@@ -150,7 +150,7 @@ describe('redis-hq', function() {
         });
 
         //standard tag query with tag-specified sort order
-        it.only('should get all content tagged with "popular" sorted by "score asc"', function(done) {
+        it('should get all content tagged with "popular" sorted by "score asc"', function(done) {
             Content.all({where: {tags: 'popular'}, reverse: false}, function (e, c) {
                 should.not.exist(e);
                 should.exist(c);
