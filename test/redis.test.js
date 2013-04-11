@@ -130,25 +130,27 @@ describe('redis-hq', function() {
     describe('customSort', function() {
 
         before(function(done) {
-            Content.create([{
-                groupId: 1,
-                url: 'one',
-                score: 7,
-                tags: [ 'popular' ]
-            }, {
-                groupId: 1,
-                url: 'three',
-                score: 9,
-                tags: [ 'popular' ]
-            }, {
-                url: 'two',
-                score: 8,
-                tags: [ 'popular' ]
-            }], done);
+            Content.destroyAll(function() {
+                Content.create([{
+                    groupId: 1,
+                    url: 'one',
+                    score: 7,
+                    tags: [ 'popular' ]
+                }, {
+                    groupId: 1,
+                    url: 'three',
+                    score: 9,
+                    tags: [ 'popular' ]
+                }, {
+                    url: 'two',
+                    score: 8,
+                    tags: [ 'popular' ]
+                }], done);
+            });
         });
 
         //standard tag query with tag-specified sort order
-        it('should get all content tagged with "popular" sorted by "score asc"', function(done) {
+        it.only('should get all content tagged with "popular" sorted by "score asc"', function(done) {
             Content.all({where: {tags: 'popular'}, reverse: false}, function (e, c) {
                 should.not.exist(e);
                 should.exist(c);
