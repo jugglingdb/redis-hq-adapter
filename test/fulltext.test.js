@@ -2,7 +2,7 @@ var should = require('./init.js'), reds = require('reds');
 
 var db, Book;
 
-describe.only('fulltext', function() {
+describe('fulltext-search', function() {
 
     before(function(done) {
         db = getSchema();
@@ -29,21 +29,47 @@ describe.only('fulltext', function() {
 
     it('should update fulltext index and query data', function(done) {
         var b;
-        Book.create({title: 'Idiot', author: 'Fedor Dostoevsky'}, function(e, book) {
-            b = book;
+        Book.create([
+            {title: 'Idiot', author: 'Fedor Dostoevsky'},
+            {title: 'Anna Karenina', author: 'Fedor Dostoevsky'},
+            {title: 'War and Peace', author: 'Lev Tolstoy'}
+        ], function(e, book) {
+            b = book[0];;
             should.not.exist(e);
-            setTimeout(queryIndex, 100);
+            setTimeout(queryIndex, 50);
         });
 
         function queryIndex() {
             Book.all({fulltext: 'idiot'}, function(e, books) {
                 should.not.exist(e);
                 should.exist(books);
+                books.should.have.lengthOf(1);
                 books[0].id.should.equal(b.id);
+                next();
+            });
+        }
+
+        function next() {
+            Book.all({fulltext: 'dostoevsky'}, function(e, books) {
+                should.not.exist(e);
+                should.exist(books);
+                books.should.have.lengthOf(2);
+                last();
+            });
+        }
+
+        function last() {
+            Book.all({fulltext: 'tolstoy'}, function(e, books) {
+                should.not.exist(e);
+                should.exist(books);
+                books.should.have.lengthOf(1);
+                books[0].title.should.equal('War and Peace');
                 done();
             });
         }
+
     });
+
 });
 
 function SearchAPI(){
