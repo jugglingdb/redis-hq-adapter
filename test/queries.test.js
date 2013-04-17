@@ -20,90 +20,97 @@ describe('queries', function() {
 
     after(function() {
         db.log = log;
+        queries = [];
     });
 
-    beforeEach(function(done) {
-        Item.destroyAll(function() {
-            queries = [];
-            done();
+    describe('indexes', function() {
+
+        beforeEach(function(done) {
+            Item.destroyAll(function() {
+                done();
+            });
+        });
+
+        it('should query by single index', function(done) {
+            Item.all({where: {index1: 'filter'}}, function(err, collection) {
+                queries.should.have.lengthOf(1);
+                queries.pop().should.equal('ZRANGE z:Item:index1:filter 0 -1');
+                done();
+            });
+        });
+
+        it('should add items to index using defaultSort on creation', function(done) {
+            Item.create({
+                score: 29,
+                index1: 'bada',
+                name: 'Jon'
+            }, function(err, item) {
+                should.not.exist(err);
+                should.exist(item);
+                queries.shift().should.equal('INCR id:Item');
+                queries.shift().should.equal('GET Item:' + item.id);
+                queries.shift().should.equal('SET Item:' + item.id + ' ' + JSON.stringify(item));
+                queries.shift().should.equal([
+                    'MULTI',
+                    '  ZADD z:Item:index1:bada 29 ' + item.id,
+                    '  ZADD z:Item@score 29 ' + item.id,
+                    '  ZADD z:Item@id ' + item.id + ' ' + item.id,
+                    'EXEC'
+                ].join('\n'));
+                done();
+            });
         });
     });
 
-    it('should query by single index', function(done) {
-        Item.all({where: {index1: 'filter'}}, function(err, collection) {
-            queries.should.have.lengthOf(1);
-            queries.pop().should.equal('ZRANGE z:Item:index1:filter 0 -1');
-            done();
-        });
-    });
+    describe('score casting', function() {
 
-    it('should add items to index using defaultSort on creation', function(done) {
-        Item.create({
-            score: 29,
-            index1: 'bada',
-            name: 'Jon'
-        }, function(err, item) {
-            should.not.exist(err);
-            should.exist(item);
-            queries.shift().should.equal('INCR id:Item');
-            queries.shift().should.equal('GET Item:' + item.id);
-            queries.shift().should.equal('SET Item:' + item.id + ' ' + JSON.stringify(item));
-            queries.shift().should.equal([
-                'MULTI',
-                '  ZADD z:Item:index1:bada 29 ' + item.id,
-                '  ZADD z:Item@score 29 ' + item.id,
-                '  ZADD z:Item@id ' + item.id + ' ' + item.id,
-                'EXEC'
-            ].join('\n'));
-            done();
+        it('should convert date to number when used in score', function(done) {
+            var ScoreByDate = db.define('ScoreByDate', {
+                date: Date,
+                haha: {type: String, index: true}
+            }, {defaultSort: 'date'});
+            var date = new Date, ts = date.getTime();
+            ScoreByDate.create({date: date, haha: 'hoho'}, function(e, s) {
+                var q = queries.pop();
+                q.should.include('ZADD z:ScoreByDate@date ' + ts + ' ' + s.id);
+                q.should.include('ZADD z:ScoreByDate:haha:hoho ' + ts + ' ' + s.id);
+                done();
+            });
         });
-    });
 
-    it('should convert date to number when used in score', function(done) {
-        var ScoreByDate = db.define('ScoreByDate', {
-            date: Date,
-            haha: {type: String, index: true}
-        }, {defaultSort: 'date'});
-        var date = new Date, ts = date.getTime();
-        ScoreByDate.create({date: date, haha: 'hoho'}, function(e, s) {
-            var q = queries.pop();
-            q.should.include('ZADD z:ScoreByDate@date ' + ts + ' ' + s.id);
-            q.should.include('ZADD z:ScoreByDate:haha:hoho ' + ts + ' ' + s.id);
-            done();
+        it('should convert string to number when used in score', function(done) {
+            var ScoreByString = db.define('ScoreByStr', {
+                str: String,
+                haha: {type: String, index: true}
+            }, {defaultSort: 'str'});
+            var str = 'hello',
+                score = parseInt([
+                    'h'.charCodeAt(0).toString(2),
+                    'e'.charCodeAt(0).toString(2),
+                    'l'.charCodeAt(0).toString(2),
+                    'l'.charCodeAt(0).toString(2)
+                ].join(''), 2);
+            ScoreByString.create({str: str, haha: 'hoho'}, function(e, s) {
+                var q = queries.pop();
+                q.should.include('ZADD z:ScoreByStr@str ' + score + ' ' + s.id);
+                q.should.include('ZADD z:ScoreByStr:haha:hoho ' + score + ' ' + s.id);
+                done();
+            });
         });
-    });
 
-    it('should convert string to number when used in score', function(done) {
-        var ScoreByString = db.define('ScoreByStr', {
-            str: String,
-            haha: {type: String, index: true}
-        }, {defaultSort: 'str'});
-        var str = 'hello',
-            score = parseInt([
-                'h'.charCodeAt(0).toString(2),
-                'e'.charCodeAt(0).toString(2),
-                'l'.charCodeAt(0).toString(2),
-                'l'.charCodeAt(0).toString(2)
-            ].join(''), 2);
-        ScoreByString.create({str: str, haha: 'hoho'}, function(e, s) {
-            var q = queries.pop();
-            q.should.include('ZADD z:ScoreByStr@str ' + score + ' ' + s.id);
-            q.should.include('ZADD z:ScoreByStr:haha:hoho ' + score + ' ' + s.id);
-            done();
+        it('should convert bool to number when used in score', function(done) {
+            var ScoreByBool = db.define('ScoreByBool', {
+                bool: Boolean,
+                haha: {type: String, index: true}
+            }, {defaultSort: 'bool'});
+            ScoreByBool.create({bool: true, haha: 'hoho'}, function(e, s) {
+                var q = queries.pop();
+                q.should.include('ZADD z:ScoreByBool@bool 1 ' + s.id);
+                q.should.include('ZADD z:ScoreByBool:haha:hoho 1 ' + s.id);
+                done();
+            });
         });
-    });
 
-    it('should convert bool to number when used in score', function(done) {
-        var ScoreByBool = db.define('ScoreByBool', {
-            bool: Boolean,
-            haha: {type: String, index: true}
-        }, {defaultSort: 'bool'});
-        ScoreByBool.create({bool: true, haha: 'hoho'}, function(e, s) {
-            var q = queries.pop();
-            q.should.include('ZADD z:ScoreByBool@bool 1 ' + s.id);
-            q.should.include('ZADD z:ScoreByBool:haha:hoho 1 ' + s.id);
-            done();
-        });
     });
 
 });
