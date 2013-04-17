@@ -93,7 +93,7 @@ describe('queries', function() {
         });
     });
 
-    it.only('should convert bool to number when used in score', function(done) {
+    it('should convert bool to number when used in score', function(done) {
         var ScoreByBool = db.define('ScoreByBool', {
             bool: Boolean,
             haha: {type: String, index: true}
