@@ -59,4 +59,38 @@ describe('queries', function() {
         });
     });
 
+    it('should convert date to number when used in score', function(done) {
+        var ScoreByDate = db.define('ScoreByDate', {
+            date: Date,
+            haha: {type: String, index: true}
+        }, {defaultSort: 'date'});
+        var date = new Date, ts = date.getTime();
+        ScoreByDate.create({date: date, haha: 'hoho'}, function(e, s) {
+            var q = queries.pop();
+            q.should.include('ZADD z:ScoreByDate@date ' + ts + ' ' + s.id);
+            q.should.include('ZADD z:ScoreByDate:haha:hoho ' + ts + ' ' + s.id);
+            done();
+        });
+    });
+
+    it.only('should convert string to number when used in score', function(done) {
+        var ScoreByString = db.define('ScoreByStr', {
+            str: String,
+            haha: {type: String, index: true}
+        }, {defaultSort: 'str'});
+        var str = 'hello',
+            score = parseInt([
+                'h'.charCodeAt(0).toString(2),
+                'e'.charCodeAt(0).toString(2),
+                'l'.charCodeAt(0).toString(2),
+                'l'.charCodeAt(0).toString(2)
+            ].join(''), 2);
+        ScoreByString.create({str: str, haha: 'hoho'}, function(e, s) {
+            var q = queries.pop();
+            q.should.include('ZADD z:ScoreByStr@str ' + score + ' ' + s.id);
+            q.should.include('ZADD z:ScoreByStr:haha:hoho ' + score + ' ' + s.id);
+            done();
+        });
+    });
+
 });
