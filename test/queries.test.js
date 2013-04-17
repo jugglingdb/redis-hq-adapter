@@ -73,7 +73,7 @@ describe('queries', function() {
         });
     });
 
-    it.only('should convert string to number when used in score', function(done) {
+    it('should convert string to number when used in score', function(done) {
         var ScoreByString = db.define('ScoreByStr', {
             str: String,
             haha: {type: String, index: true}
@@ -89,6 +89,19 @@ describe('queries', function() {
             var q = queries.pop();
             q.should.include('ZADD z:ScoreByStr@str ' + score + ' ' + s.id);
             q.should.include('ZADD z:ScoreByStr:haha:hoho ' + score + ' ' + s.id);
+            done();
+        });
+    });
+
+    it.only('should convert bool to number when used in score', function(done) {
+        var ScoreByBool = db.define('ScoreByBool', {
+            bool: Boolean,
+            haha: {type: String, index: true}
+        }, {defaultSort: 'bool'});
+        ScoreByBool.create({bool: true, haha: 'hoho'}, function(e, s) {
+            var q = queries.pop();
+            q.should.include('ZADD z:ScoreByBool@bool 1 ' + s.id);
+            q.should.include('ZADD z:ScoreByBool:haha:hoho 1 ' + s.id);
             done();
         });
     });
