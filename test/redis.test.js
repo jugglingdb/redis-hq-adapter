@@ -187,4 +187,74 @@ describe('redis-hq', function() {
         });
 
     });
+
+    describe('customSort in m2m', function() {
+        var Post, Tag, PostTag;
+
+        before(function(done) {
+            Post = db.define('Post', {title: String, score: Number});
+            Tag = db.define('Tag', {name: String});
+            PostTag = db.define('PostTag', null, {
+                delegatedIndexes: {
+                    tagId: {
+                        model: 'Post', // index of Model type
+                        key: 'postId', // source key
+                        score: function(obj, rel) {
+                            if (rel.tag && rel.tag.name === 'popular') {
+                                return rel.post.score;
+                            }
+                            return obj.id;
+                        }
+                    },
+                    postId: {
+                        model: 'Tag',
+                        key: 'tagId'
+                    }
+                }
+            });
+            Post.hasAndBelongsToMany('tags');
+            Tag.hasAndBelongsToMany('posts');
+            Post.destroyAll();
+            Tag.destroyAll();
+            PostTag.destroyAll(done);
+        });
+
+        it('should create and retrieve records', function(done) {
+            var tag;
+
+            Post.create({score: 10}, function(e, p) {
+                p.tags.create({name: 'one'});
+                p.tags.create({name: 'two'});
+                p.tags.create({name: 'three'});
+                p.tags.create({name: 'popular'}, next);
+            });
+
+            function next(e, popular) {
+                tag = popular;
+                Post.create({score: 1}, function(e, p) {
+                    p.tags.add(popular, query);
+                });
+            }
+
+            function query() {
+                tag.posts(true, function(err, posts) {
+                    should.not.exist(err);
+                    should.exist(posts);
+                    posts.should.have.lengthOf(2);
+                    posts[0].score.should.equal(1);
+                    posts[1].score.should.equal(10);
+                });
+
+                tag.posts({reverse: true}, function(err, posts) {
+                    should.not.exist(err);
+                    should.exist(posts);
+                    posts.should.have.lengthOf(2);
+                    posts[0].score.should.equal(10);
+                    posts[1].score.should.equal(1);
+                    done();
+                });
+            }
+        });
+    });
+
 });

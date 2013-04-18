@@ -9,9 +9,19 @@ describe('index-only model', function() {
         Customer = db.define('Customer');
         Vendor = db.define('Vendor');
         Deal = db.define('Deal', null, {
-            sets: {
-                vendorId: 'customerId',
-                customerId: 'vendorId'
+            delegatedIndexes: {
+                // z:Customer:Deal-vendorId:x of customerId
+                // to query Customer.all({where: {'Deal-vendorId': x}}
+                vendorId: {
+                    model: 'Customer',
+                    key: 'customerId'
+                },
+                // z:Vendor:Deal-customerId:x of vendorId
+                // to query Vendor.all({where: {'Deal-customerId': x}}
+                customerId: {
+                    model: 'Vendor',
+                    key: 'vendorId'
+                }
             }
         });
 

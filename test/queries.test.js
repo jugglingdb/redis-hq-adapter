@@ -20,13 +20,13 @@ describe('queries', function() {
 
     after(function() {
         db.log = log;
-        queries = [];
     });
 
     describe('indexes', function() {
 
         beforeEach(function(done) {
             Item.destroyAll(function() {
+                queries = [];
                 done();
             });
         });
@@ -48,7 +48,6 @@ describe('queries', function() {
                 should.not.exist(err);
                 should.exist(item);
                 queries.shift().should.equal('INCR id:Item');
-                queries.shift().should.equal('GET Item:' + item.id);
                 queries.shift().should.equal('SET Item:' + item.id + ' ' + JSON.stringify(item));
                 queries.shift().should.equal([
                     'MULTI',
@@ -63,6 +62,10 @@ describe('queries', function() {
     });
 
     describe('score casting', function() {
+
+        beforeEach(function() {
+            queries = [];
+        });
 
         it('should convert date to number when used in score', function(done) {
             var ScoreByDate = db.define('ScoreByDate', {
