@@ -25,9 +25,11 @@ describe('index-only model', function() {
             }
         });
 
-        Customer.destroyAll();
-        Vendor.destroyAll();
-        Deal.destroyAll(done);
+        Vendor.destroyAll(function() {
+            Customer.destroyAll(function() {
+                Deal.destroyAll(done);
+            });
+        });
     });
 
     it('should be declared', function() {
