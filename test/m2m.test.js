@@ -1,7 +1,7 @@
 var should = require('./init.js');
 var Content, db;
 
-describe('redis-hq', function() {
+describe('m2m', function() {
 
     before(function() {
         db = getSchema();
@@ -214,9 +214,11 @@ describe('redis-hq', function() {
             });
             Post.hasAndBelongsToMany('tags');
             Tag.hasAndBelongsToMany('posts');
-            Post.destroyAll();
-            Tag.destroyAll();
-            PostTag.destroyAll(done);
+            Post.destroyAll(function() {
+                Tag.destroyAll(function() {
+                    PostTag.destroyAll(done);
+                });
+            });
         });
 
         it('should create and retrieve records', function(done) {

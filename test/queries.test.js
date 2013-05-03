@@ -34,7 +34,7 @@ describe('queries', function() {
         it('should query by single index', function(done) {
             Item.all({where: {index1: 'filter'}}, function(err, collection) {
                 queries.should.have.lengthOf(1);
-                queries.pop().should.equal('ZRANGE z:Item:index1:filter 0 -1');
+                queries.pop().should.match(/EVALSHA .*? 0 z:Item:index1:filter 0 -1 Item/);
                 done();
             });
         });
