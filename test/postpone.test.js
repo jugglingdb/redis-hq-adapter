@@ -1,7 +1,7 @@
 var should = require('./init.js');
 var db, List, Item, queries = [], log;
 
-describe.only('postpone', function() {
+describe('postpone', function() {
 
     before(function(done) {
         db = getSchema();
@@ -37,14 +37,13 @@ describe.only('postpone', function() {
     it('should allow to postpone increments', function(done) {
         queries.should.have.lengthOf(7);
         setTimeout(function() {
-            console.log(queries);
             done();
         }, 102);
     });
 
     it('should allow to postpone caching', function(done) {
         setTimeout(function() {
-            console.log(queries);
+            // console.log(queries);
             done();
         }, 100);
     });
@@ -55,7 +54,6 @@ describe.only('postpone', function() {
                 var wait = count;
                 queries = [];
                 List.create(function(err, list) {
-                    console.log(list);
                     for (var i = 0; i < count; i += 1) {
                         list.items.create(ok);
                     }
