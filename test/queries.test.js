@@ -139,7 +139,7 @@ describe('queries', function() {
             });
         });
 
-        it.only('should query conditional count using zcard', function(done) {
+        it('should query conditional count using zcard', function(done) {
             Mana.count({foo: 'bar'}, function() {
                 queries[0].should.equal('ZCARD z:Mana:foo:bar');
                 done();
