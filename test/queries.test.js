@@ -116,4 +116,36 @@ describe('queries', function() {
 
     });
 
+    describe('count', function() {
+
+        var Mana;
+        before(function(done) {
+            Mana = db.define('Mana', {foo: {type: String, index: true}});
+            Mana.create([
+                {foo: 'bar'},
+                {foo: 'bza'},
+                {foo: 'bar'}
+            ], done);
+        });
+
+        beforeEach(function() {
+            queries = [];
+        });
+
+        it('should query count using zcard', function(done) {
+            Mana.count(function() {
+                queries[0].should.equal('ZCARD z:Mana@id');
+                done();
+            });
+        });
+
+        it.only('should query conditional count using zcard', function(done) {
+            Mana.count({foo: 'bar'}, function() {
+                queries[0].should.equal('ZCARD z:Mana:foo:bar');
+                done();
+            });
+        });
+
+    });
+
 });
