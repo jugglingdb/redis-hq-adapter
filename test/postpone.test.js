@@ -35,7 +35,7 @@ describe('postpone', function() {
     });
 
     it('should allow to postpone increments', function(done) {
-        queries.should.have.lengthOf(7);
+        queries.should.have.lengthOf(6);
         setTimeout(function() {
             done();
         }, 102);
