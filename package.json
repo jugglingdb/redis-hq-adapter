@@ -14,7 +14,10 @@
     "should": "~1.2.2",
     "mocha": "~1.8.2"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jugglingdb/redis-hq-adapter"
+  },
   "author": "Anatoliy Chakkaev <mail@anatoliy.in>",
   "license": "MIT"
 }
