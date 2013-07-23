@@ -7,10 +7,10 @@ describe('postpone', function() {
         db = getSchema();
         List = db.define('List', {
             itemsCount: {type: Number, default: 0, postpone: {
-                action: 'INCR', timeout: 100, method: 'incrItemsCount'
+                action: 'INCR', timeout: 1000, method: 'incrItemsCount'
             }},
             itemsCache: {type: [], postpone: {
-                action: 'CACHE', timeout: 200, method: 'updateCachedItems',
+                action: 'CACHE', timeout: 2000, method: 'updateCachedItems',
                 relation: 'items', query: {limit: 3}
             }}
         });
@@ -38,14 +38,14 @@ describe('postpone', function() {
         queries.should.have.lengthOf(6);
         setTimeout(function() {
             done();
-        }, 102);
+        }, 1020);
     });
 
     it('should allow to postpone caching', function(done) {
         setTimeout(function() {
             // console.log(queries);
             done();
-        }, 100);
+        }, 1000);
     });
 
     function seedData(count, done) {
