@@ -13,7 +13,8 @@
     "jugglingdb": "https://github.com/1602/jugglingdb/archive/master.tar.gz",
     "should": "~1.2.2",
     "mocha": "~1.8.2",
-    "reds": ">=0"
+    "reds": ">=0",
+    "async": "latest"
   },
   "repository": {
     "type": "git",
