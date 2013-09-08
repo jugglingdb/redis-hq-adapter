@@ -3,10 +3,24 @@ var Content, db;
 
 describe('queue', function() {
 
+    var queries = [];
     before(function() {
         db = getSchema();
 
         Content = db.define('Content', {hello: String});
+        db.log = function (q) {
+            queries.push(q);
+        };
+    });
+
+    it('should not queue Model.all queries', function(done) {
+        Content.all({}, function() {});
+        Content.all(function() {
+            queries.should.have.lengthOf(2);
+            queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Content@id 0 -1 Content');
+            queries[1].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Content@id 0 -1 Content');
+            done();
+        });
     });
 
     it.skip('should queue queries', function(done) {
