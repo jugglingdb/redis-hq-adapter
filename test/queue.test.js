@@ -1,12 +1,26 @@
 var should = require('./init.js');
-var Content, db;
+var Content, db, queries = [];
 
 describe('queue', function() {
 
     before(function() {
         db = getSchema();
 
-        Content = db.define('Content', {hello: String});
+        Content = db.define('Content', {hello: String, index: {type: String, index: true}});
+        db.log = function (q) {
+            queries.push(q);
+        };
+    });
+
+    it('should not queue Model.all queries', function(done) {
+        db.settings.maxMultiBatchSize = 1;
+        Content.all({where: {index: 'hey'}}, function() {});
+        Content.all(function() {
+            queries.should.have.lengthOf(2);
+            queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Content:index:hey 0 -1 Content');
+            queries[1].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Content@id 0 -1 Content');
+            done();
+        });
     });
 
     it.skip('should queue queries', function(done) {
