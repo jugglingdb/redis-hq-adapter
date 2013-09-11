@@ -25,4 +25,10 @@ pr: push
 push: test
 	git push origin $(TO)
 
-.PHONY: test docs
+benchmark:
+	node ./benchmark/benchmark.js alpha > /tmp/data1
+	node ./benchmark/benchmark.js bravo > /tmp/data2
+
+haha:
+
+.PHONY: test docs benchmark
