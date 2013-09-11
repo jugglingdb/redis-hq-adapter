@@ -4,6 +4,10 @@ var Schema = require('jugglingdb').Schema;
 
 global.getSchema = function() {
     var db = new Schema(require('../'), {url: 'localhost', database: 2});
-    db.log = function (a) { console.log(a); };
+    if (process.env.DEBUG_REDIS) {
+        db.log = function (a) { console.log(a); };
+    } else {
+        db.log = function (a) { };
+    }
     return db;
 };

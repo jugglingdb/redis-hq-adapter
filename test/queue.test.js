@@ -39,7 +39,11 @@ describe('queue', function() {
     });
 
     it('should handle failure', function(done) {
-        db.log = console.log;
+        if (process.env.DEBUG_REDIS) {
+            db.log = console.log;
+        } else {
+            db.log = function() {};
+        }
         db.settings.maxMultiBatchSize = 10;
         var one = 0, two = 0;
         db.adapter.client.set(['key', 'value'], function(err, data) {

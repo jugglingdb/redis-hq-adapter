@@ -34,14 +34,14 @@ describe('postpone', function() {
         db.log = log;
     });
 
-    it('should allow to postpone increments', function(done) {
+    it.skip('should allow to postpone increments', function(done) {
         queries.should.have.lengthOf(6);
         setTimeout(function() {
             done();
         }, 1020);
     });
 
-    it('should allow to postpone caching', function(done) {
+    it.skip('should allow to postpone caching', function(done) {
         setTimeout(function() {
             // console.log(queries);
             done();
