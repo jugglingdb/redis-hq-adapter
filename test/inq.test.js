@@ -14,14 +14,14 @@ describe('inq', function() {
             });
         });
     });
-    it('should correctly handle removed objects', function(done) {
+    it.only('should correctly handle removed objects', function(done) {
         var ids = items.map(function(item) {
             return item.id;
         });
         ids.should.have.lengthOf(3);
         items[0].destroy(function(err) {
             should.not.exist(err);
-            Item.all({id: {inq: ids }}, function(err, items) {
+            Item.all({where: {id: {inq: ids }}}, function(err, items) {
                 items.should.have.lengthOf(2);
                 done();
             });
