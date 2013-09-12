@@ -14,7 +14,8 @@ describe('inq', function() {
             });
         });
     });
-    it.only('should correctly handle removed objects', function(done) {
+
+    it('should correctly handle removed objects', function(done) {
         var ids = items.map(function(item) {
             return item.id;
         });
