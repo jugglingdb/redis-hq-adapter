@@ -5,7 +5,7 @@ describe('inq', function() {
     before(function(done) {
         db = getSchema();
         Item = db.define('Item', {
-            name: String,
+            name: {type: String, index: true}
         });
         Item.destroyAll(function() {
             Item.create([{name: 1},{name: 1},{name: 1}], function(err, data) {
