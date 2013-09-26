@@ -32,4 +32,14 @@ describe('min-max', function() {
         });
     });
 
+    it('should query with range with reverse order', function(done) {
+        Hama.all({min: 20, max: 40, order: 'score DESC'}, function(err, hamas) {
+            should.not.exist(err);
+            should.exist(hamas);
+            hamas.should.have.lengthOf(1);
+            hamas[0].name.should.equal('bics');
+            done();
+        });
+    });
+
 });
