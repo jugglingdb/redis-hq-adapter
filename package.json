@@ -10,7 +10,7 @@
     "redis": "= 0.8.2",
     "async": "latest",
     "hiredis": "~0.1.15",
-    "uuid": ">=0"
+    "node-uuid": ">=0"
   },
   "devDependencies": {
     "jugglingdb": "https://github.com/1602/jugglingdb/archive/master.tar.gz",
