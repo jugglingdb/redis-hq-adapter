@@ -14,7 +14,7 @@ for i,v in ipairs(ids) do
 end;
 
 if count == 0 then
-    return '';
+    return {nil, nil};
 end
 
-return redis.call('MGET', unpack(newIds));
+return {ids, redis.call('MGET', unpack(newIds))};
