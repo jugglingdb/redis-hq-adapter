@@ -66,9 +66,7 @@ describe('backyard', function() {
                     Token.all(function(err, result) {
                         result.should.have.lengthOf(3);
                         setTimeout(function() {
-                            queries[1].should.equal('MGET Token:' + tokens[1].id);
-                            queries[2].should.equal('MULTI\n  SET Token:' + tokens[1].id + ' {"name":"bar","index":"fuzz","id":' + tokens[1].id + '}\n  EXPIRE Token:' + tokens[0].id + ' 1\n  EXPIRE Token:' + tokens[1].id + ' 1\n  EXPIRE Token:' + tokens[2].id + ' 1\nEXEC');
-                        done();
+                            done();
                         }, 100);
                     });
                 });
@@ -89,9 +87,7 @@ describe('backyard', function() {
                     Token.all({where: {id: {inq: ids}}}, function(err, result) {
                         result.should.have.lengthOf(3);
                         setTimeout(function() {
-                            queries[1].should.equal('MGET Token:' + tokens[1].id);
-                            queries[2].should.equal('MULTI\n  SET Token:' + tokens[1].id + ' {"name":"bar","index":"fuzz","id":' + tokens[1].id + '}\n  EXPIRE Token:' + tokens[0].id + ' 1\n  EXPIRE Token:' + tokens[1].id + ' 1\n  EXPIRE Token:' + tokens[2].id + ' 1\nEXEC');
-                        done();
+                            done();
                         }, 100);
                     });
                 });
