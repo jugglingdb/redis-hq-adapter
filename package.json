@@ -16,6 +16,7 @@
     "jugglingdb": ">=0.2.3",
     "should": "~1.2.2",
     "mocha": "~1.8.2",
+    "semicov": ">=0",
     "reds": ">=0"
   },
   "repository": {
