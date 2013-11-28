@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "redis": "=0.8.2",
-    "async": "latest",
+    "async": ">=0.2.9",
     "hiredis": "~0.1.15",
     "node-uuid": ">=0"
   },
