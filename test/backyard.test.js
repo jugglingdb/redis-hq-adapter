@@ -3,22 +3,28 @@ var db, Token, Schema = require('jugglingdb').Schema, log, queries = [];
 
 describe('backyard', function() {
 
-    before(function() {
+    before(function(done) {
         db = getSchema();
-        db.backyard = new Schema(require('../'), {database: 3});
+        db.backyard = new Schema(require('mysql-adapter'), {
+            user: 'root',
+            database: 'myapp_test',
+            slave: true
+        });
         defs(db);
         defs(db.backyard);
         log = db.log;
         db.log = db.backyard.log = function (q) {
             queries.push(q);
         };
+        db.backyard.automigrate(done);
         Token = db.models.Token;
         function defs(db) {
             db.define('Token', {
                 name: String,
-                index: {type: String, index: true}
+                index: {type: String, index: true, length: 50}
             }, {
-                expire: 1
+                expire: 1,
+                uuid: 'v4'
             });
         }
     });
@@ -96,4 +102,3 @@ describe('backyard', function() {
     });
 
 });
-
