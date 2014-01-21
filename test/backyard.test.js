@@ -5,7 +5,7 @@ describe('backyard', function() {
 
     before(function(done) {
         db = getSchema();
-        db.backyard = new Schema(require('mysql-adapter'), {
+        db.backyard = new Schema(require('jugglingdb-mysql'), {
             user: 'root',
             database: 'myapp_test',
             slave: true
