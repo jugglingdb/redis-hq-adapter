@@ -6,7 +6,7 @@ describe('backyard', function() {
     before(function(done) {
         db = getSchema();
         db.backyard = new Schema(require('jugglingdb-mysql'), {
-            user: 'root',
+            username: 'root',
             database: 'myapp_test',
             slave: true
         });
