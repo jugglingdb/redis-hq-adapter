@@ -86,7 +86,7 @@ describe('backyard', function() {
         Token.destroyAll(function() {
             Token.create([
                 {name: 'foo', index: 'bar'},
-                {name: 'bar', index: 'fuzz'},
+                {name: 'bar', index: 'fuzz'}, // will be expired manually
                 {name: 'baz', index: 'bar'}
             ], function(err, tokens) {
                 queries = [];
@@ -98,6 +98,68 @@ describe('backyard', function() {
                             done();
                         }, 100);
                     });
+                });
+            });
+        });
+    });
+
+    it('should not expire item on reading after backyard error: one hole', function(done) {
+        Token.destroyAll(function() {
+            Token.create([
+                {id: 1, name: 'normal', index: 'bar'},
+                {id: 2, name: 'expired', index: 'fuzz'}, // will be expired manually
+                {id: 3, name: 'errored', index: 'bar'} // will emulate backyard error
+            ], function(err, tokens) {
+                // emulate expire with no backyard error
+                db.client.del('Token:2', function() {
+                    // emulate backyard error (no expire was set on create, no data in backyard)
+                    db.adapter.client.del('Token:3', function() {
+                    db.adapter.client.set('Token:3', JSON.stringify(tokens[2]), function() {
+                        db.backyard.models.Token({id: 3}).destroy(function() {
+                    queries = [];
+                            // test how it works
+                            Token.all(function() {
+                                setTimeout(function() {
+                                    queries.should.have.lengthOf(4);
+                                    queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Token@id 0 -1 Token');
+                                    queries[1].should.equal('SELECT * FROM `Token` WHERE `id` IN (\'2\')');
+                                    queries[2].should.equal('MULTI\n  TTL Token:1\n  TTL Token:3\n  SET Token:2 {"name":"expired","index":"fuzz","id":"2"}\n  EXPIRE Token:2 1\nEXEC');
+                                    queries[3].should.equal('EXPIRE Token:1 1');
+                                    done();
+                                }, 100);
+                            });
+                        });
+                    });
+                });
+            });
+            });
+        });
+    });
+
+    it('should not expire item on reading after backyard error: all present', function(done) {
+        Token.destroyAll(function() {
+            Token.create([
+                {id: 1, name: 'normal', index: 'bar'},
+                {id: 2, name: 'normal', index: 'fuzz'}, // will be expired manually
+                {id: 3, name: 'errored', index: 'bar'} // will emulate backyard error
+            ], function(err, tokens) {
+                // emulate backyard error (no expire was set on create, no data in backyard)
+                db.adapter.client.del('Token:3', function() {
+                db.adapter.client.set(['Token:3', JSON.stringify(tokens[2])], function() {
+                    db.backyard.models.Token({id: 3}).destroy(function() {
+                        queries = [];
+                        // test how it works
+                        Token.all(function() {
+                            setTimeout(function() {
+                                queries.should.have.lengthOf(3);
+                                queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Token@id 0 -1 Token');
+                                queries[1].should.equal('MULTI\n  TTL Token:1\n  TTL Token:2\n  TTL Token:3\nEXEC');
+                                queries[2].should.equal('MULTI\n  EXPIRE Token:1 1\n  EXPIRE Token:2 1\nEXEC');
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
                 });
             });
         });
