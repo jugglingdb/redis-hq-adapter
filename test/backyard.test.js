@@ -8,6 +8,7 @@ describe('backyard', function() {
         db.backyard = new Schema(require('jugglingdb-mysql'), {
             username: 'root',
             database: 'myapp_test',
+            // log: true,
             slave: true
         });
         defs(db);
@@ -51,8 +52,9 @@ describe('backyard', function() {
             queries = [];
             Token.find(token.id, function(err, t) {
                 setTimeout(function() {
-                    queries.should.have.lengthOf(2);
-                    queries[1].should.equal('EXPIRE Token:' + t.id + ' 1');
+                    queries.should.have.lengthOf(3);
+                    queries[1].should.equal('TTL Token:' + t.id);
+                    queries[2].should.equal('EXPIRE Token:' + t.id + ' 1');
                     done();
                 }, 100);
             });
