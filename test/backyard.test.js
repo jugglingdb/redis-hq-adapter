@@ -22,7 +22,7 @@ describe('backyard', function() {
         function defs(db) {
             db.define('Token', {
                 name: String,
-                fixed: Number,
+                fixed: {type: Number, dataType: 'decimal'},
                 index: {type: String, index: true, length: 50}
             }, {
                 expire: 1,
