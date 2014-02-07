@@ -22,6 +22,7 @@ describe('backyard', function() {
         function defs(db) {
             db.define('Token', {
                 name: String,
+                fixed: Number,
                 index: {type: String, index: true, length: 50}
             }, {
                 expire: 1,
@@ -35,12 +36,13 @@ describe('backyard', function() {
     });
 
     it('should create and read one item', function(done) {
-        Token.create({name: 'foo', index: 'a'}, function(err, token) {
+        Token.create({name: 'foo', fixed: 2.17, index: 'a'}, function(err, token) {
             db.adapter.client.del('Token:' + token.id, function(err, res) {
                 Token.find(token.id, function(err, t) {
                     should.exist(t);
                     t.id.should.equal(token.id);
                     t.name.should.equal('foo');
+                    t.fixed.should.equal(2.17);
                     done();
                 });
             });
@@ -123,7 +125,7 @@ describe('backyard', function() {
                                     queries.should.have.lengthOf(4);
                                     queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Token@id 0 -1 Token');
                                     queries[1].should.equal('SELECT * FROM `Token` WHERE `id` IN (\'2\')');
-                                    queries[2].should.equal('MULTI\n  TTL Token:1\n  TTL Token:3\n  SET Token:2 {"name":"expired","index":"fuzz","id":"2"}\n  EXPIRE Token:2 1\nEXEC');
+                                    queries[2].should.equal('MULTI\n  TTL Token:1\n  TTL Token:3\n  SET Token:2 {"name":"expired","fixed":null,"index":"fuzz","id":"2"}\n  EXPIRE Token:2 1\nEXEC');
                                     queries[3].should.equal('EXPIRE Token:1 1');
                                     done();
                                 }, 100);
