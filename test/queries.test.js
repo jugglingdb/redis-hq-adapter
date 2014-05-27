@@ -51,6 +51,8 @@ describe('queries', function() {
                 queries.shift().should.equal('SET Item:' + item.id + ' ' + JSON.stringify(item));
                 queries.shift().should.equal([
                     'MULTI',
+                    '  ZREM z:Item@id ' + item.id,
+                    '  ZREM z:Item@score ' + item.id,
                     '  ZADD z:Item:index1:bada 29 ' + item.id,
                     '  ZADD z:Item@score 29 ' + item.id,
                     '  ZADD z:Item@id ' + item.id + ' ' + item.id,
