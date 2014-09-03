@@ -13,7 +13,7 @@
     "node-uuid": ">=0"
   },
   "devDependencies": {
-    "jugglingdb-mysql": "0.0.7",
+    "jugglingdb-mysql": "https://github.com/jugglingdb/mysql-adapter/tarball/latest",
     "jugglingdb": ">=0.2.8",
     "should": "~1.2.2",
     "mocha": "~1.8.2",
