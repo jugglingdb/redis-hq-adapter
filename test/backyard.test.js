@@ -20,8 +20,10 @@ describe('backyard', function() {
         db.backyard.automigrate(done);
         Token = db.models.Token;
         function defs(db) {
+            function JSON() {};
             db.define('Token', {
                 name: String,
+                json: JSON,
                 fixed: {type: Number, dataType: 'decimal'},
                 index: {type: String, index: true, length: 50}
             }, {
@@ -125,7 +127,7 @@ describe('backyard', function() {
                                     queries.should.have.lengthOf(4);
                                     queries[0].should.equal('EVALSHA [Lua: ZRANGE+MGET] 0 z:Token@id 0 -1 Token');
                                     queries[1].should.equal('SELECT * FROM `Token` WHERE `id` IN (\'2\')');
-                                    queries[2].should.equal('MULTI\n  TTL Token:1\n  TTL Token:3\n  SET Token:2 {"name":"expired","fixed":null,"index":"fuzz","id":"2"}\n  EXPIRE Token:2 1\nEXEC');
+                                    queries[2].should.equal('MULTI\n  TTL Token:1\n  TTL Token:3\n  SET Token:2 {"name":"expired","json":null,"fixed":null,"index":"fuzz","id":"2"}\n  EXPIRE Token:2 1\nEXEC');
                                     queries[3].should.equal('EXPIRE Token:1 1');
                                     done();
                                 }, 100);
@@ -167,4 +169,23 @@ describe('backyard', function() {
         });
     });
 
+    it('should not truncate expired items', function(done) {
+        var s = '1234567890abcdef';
+        while (s.length < 1000000) {
+            s += s.concat(s);
+        }
+        var length = s.length;
+        Token.create({json: s}, function(err, token) {
+            db.adapter.client.del('Token:' + token.id, function() {
+                setTimeout(function() {
+                    Token.find(token.id, function(err, token) {
+                        token.json.length.should.equal(length);
+                        done();
+                    });
+                }, 10);
+            });
+        });
+    });
+
 });
+
