@@ -17,9 +17,9 @@ if count == 0 then
     return {nil, nil};
 end
 
-retval = {ids, redis.call('MGET', unpack(newIds))};
+local retval = {ids, redis.call('MGET', unpack(newIds))};
 
 redis.call('DEL', unpack(newIds));
-redis.call('ZREM', unpack(ids));
+redis.call('ZREM', ARGV[1], unpack(ids));
 
 return retval;
