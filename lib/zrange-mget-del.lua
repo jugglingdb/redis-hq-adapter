@@ -1,15 +1,14 @@
+
 local ids = {};
 local newIds = {};
+local primaryKeyIndex = {};
 local count = 0;
 
-if ARGV[5] and ARGV[6] then
-    ids = redis.call('ZRANGEBYSCORE', ARGV[1], ARGV[5], ARGV[6], 'LIMIT', tonumber(ARGV[2]), tonumber(ARGV[3]));
-else
-    ids = redis.call('ZRANGE', ARGV[1], tonumber(ARGV[2]), tonumber(ARGV[3]));
-end
+ids = redis.call('ZRANGE', ARGV[1], tonumber(ARGV[2]), tonumber(ARGV[3]));
 
 for i,v in ipairs(ids) do
     newIds[i] = ARGV[4] .. ':' .. v;
+    primaryKeyIndex[i] = 'z:' .. ARGV[4] .. ':id:' .. v;
     count = count + 1;
 end;
 
@@ -21,5 +20,11 @@ local retval = {ids, redis.call('MGET', unpack(newIds))};
 
 redis.call('DEL', unpack(newIds));
 redis.call('ZREM', ARGV[1], unpack(ids));
+redis.call('DEL', unpack(primaryKeyIndex));
+
+if ARGV[5] then
+    redis.call('ZREM', ARGV[5], unpack(ids));
+end
 
 return retval;
+
