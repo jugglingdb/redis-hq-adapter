@@ -30,7 +30,7 @@ describe('complex-index', function() {
         Huba.create({name: 'foo', score: 18, huba: 'buta'}, function(err, h) {
             should.not.exist(err);
             should.exist(h);
-            queries[2].should.include('ZADD z:Huba:ixNameScore:foo-18');
+            queries[2].indexOf('ZADD z:Huba:ixNameScore:foo-18').should.greaterThan(-1);
             done();
         });
     });
