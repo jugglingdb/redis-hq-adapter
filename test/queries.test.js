@@ -48,6 +48,7 @@ describe('queries', function() {
                 should.not.exist(err);
                 should.exist(item);
                 queries.shift().should.equal('INCR id:Item');
+                queries.shift();
                 queries.shift().should.equal('SET Item:' + item.id + ' ' + JSON.stringify(item));
                 queries.shift().should.equal([
                     'MULTI',
