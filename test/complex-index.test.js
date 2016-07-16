@@ -1,5 +1,5 @@
 var should = require('./init.js');
-var db, Hama, log, queries = [];
+var db, Huba, log, queries = [];
 
 describe('complex-index', function() {
 
