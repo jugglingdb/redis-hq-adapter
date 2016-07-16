@@ -1,4 +1,10 @@
-## JugglingDB-Redis [![Build Status](https://travis-ci.org/1602/jugglingdb-redis.png)](https://travis-ci.org/1602/jugglingdb-redis)
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Build status][build-image]][build-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
+[![Dependency Status][dependencies-image]][dependencies-url]
+
+## JugglingDB-Redis
 
 Redis adapter for jugglingdb.
 
@@ -94,3 +100,15 @@ least in development env).
 *Hint 2.* Use `log: true` to debug sql queries.
 
 *Hint 3.* Make sure your schema is sql-friendly. The most often bottleneck is indexes length, specify `length` attribute for each indexed String property.
+
+[coveralls-url]: https://coveralls.io/github/jugglingdb/redis-hq-adapter
+[coveralls-image]: https://coveralls.io/repos/github/jugglingdb/redis-hq-adapter/badge.svg
+[build-url]: https://circleci.com/gh/jugglingdb/redis-hq-adapter
+[build-image]: https://circleci.com/gh/jugglingdb/redis-hq-adapter.svg?style=shield
+[npm-image]: https://img.shields.io/npm/v/jugglingdb-redis-hq.svg
+[npm-url]: https://npmjs.org/package/jugglingdb-redis-hq
+[downloads-image]: https://img.shields.io/npm/dm/jugglingdb-redis-hq.svg
+[downloads-url]: https://npmjs.org/package/jugglingdb-redis-hq
+[dependencies-image]: https://david-dm.org/jugglingdb/redis-hq-adapter.svg
+[dependencies-url]: https://david-dm.org/jugglingdb/redis-hq-adapter
+
