@@ -4,7 +4,7 @@
   "description": "Redis adapter for jugglingdb",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --bail",
+    "test": "mocha --bail --check-leaks",
     "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/",
     "test-coverage": "istanbul cover node_modules/.bin/_mocha -- -R landing",
     "coverage-report": "export COVERALLS_GIT_COMMIT=`git rev-parse HEAD` && cat ./coverage/lcov.info | coveralls"
