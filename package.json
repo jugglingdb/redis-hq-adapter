@@ -10,9 +10,9 @@
     "coverage-report": "export COVERALLS_GIT_COMMIT=`git rev-parse HEAD` && cat ./coverage/lcov.info | coveralls"
   },
   "dependencies": {
-    "redis": "=0.9.2",
     "async": ">=0.2.9",
-    "node-uuid": ">=0"
+    "redis": "=0.9.2",
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "istanbul": "^1.1.0-alpha.1",
