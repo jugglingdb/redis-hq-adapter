@@ -28,7 +28,7 @@ To use it you need `jugglingdb@0.2.x`.
 2. Use:
 
 ```javascript
-    var Schema = require('jugglingbd').Schema;
+    var Schema = require('jugglingdb').Schema;
     var schema = new Schema('redis');
 ```
 
